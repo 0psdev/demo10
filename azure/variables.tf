@@ -43,6 +43,18 @@ variable "snet_name" {
     type = string  
 }
 
+variable "public_ip_name" {
+    description = "public ip name"
+    type = string
+  
+}
+
+variable "natgw_name" {
+    description = "nat gateway name"
+    type = string
+  
+}
+
 variable "vm_names" {
     description = "vm name"
     type = list(string)

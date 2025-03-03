@@ -18,6 +18,30 @@ resource "azurerm_subnet" "snet" {
   address_prefixes = var.snet_subnets[each.key]
 }
 
+resource "azurerm_public_ip" "my_public_ip" {
+  name                = "public-ip-nat"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_nat_gateway" "nat_gateway" {
+  name                = var.natgw_name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+}
+
+resource "azurerm_nat_gateway_public_ip_association" "ass_public_ip" {
+  nat_gateway_id       = azurerm_nat_gateway.my_nat_gateway.id
+  public_ip_address_id = azurerm_public_ip.my_public_ip.id
+}
+
+resource "azurerm_subnet_nat_gateway_association" "ass_subnet_nat" {
+  subnet_id      = azurerm_subnet.snet["subnet_02"].id
+  nat_gateway_id = azurerm_nat_gateway.my_nat_gateway.id
+}
+
 resource "azurerm_network_interface" "nic-vm" {
   for_each = toset(var.vm_names)
   name                = "${each.key}-nic"
