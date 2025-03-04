@@ -115,13 +115,13 @@ resource "aws_security_group" "sg_demo" {
     vpc_id = aws_vpc.vpc_demo.id
     ingress {
         from_port = 0
-        to_port = 65535
-        protocol = "icmp"
+        to_port = 0
+        protocol = "all"
         cidr_blocks = ["0.0.0.0/0"]
     }  
     egress {
         from_port = 0
-        to_port = 65535
+        to_port = 0
         protocol = "all"
         cidr_blocks = ["0.0.0.0/0"]
     }
@@ -134,10 +134,12 @@ resource "aws_security_group" "sg_demo" {
 //Ec2 Instance
 resource "aws_instance" "ec2_nat" {
     for_each = toset(var.prinet_az)
-    ami = "ami-0726c8f833d8aea08"
-    instance_type = "t1.micro"
+    ami = "ami-0b03299ddb99998e9"
+    instance_type = "t2.micro"
     subnet_id = aws_subnet.prisub_demo[each.key].id
     security_groups = [aws_security_group.sg_demo.id]
+    monitoring = true
+    key_name = "demo_key_ec2"
     tags = {
         Project = "demo"
         Type = "ec2"
