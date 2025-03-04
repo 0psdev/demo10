@@ -38,11 +38,6 @@ variable "snet_subnets" {
     type = map(list(string))
 }
 
-variable "snet_name" {
-    description = "subnet name"
-    type = string  
-}
-
 variable "public_ip_name" {
     description = "public ip name"
     type = string
@@ -57,7 +52,9 @@ variable "natgw_name" {
 
 variable "vm_names" {
     description = "vm name"
-    type = list(string)
+    type = map(object({
+        subnet = string
+    }))
   
 }
 
@@ -66,7 +63,6 @@ variable "vm_specs" {
     type = map(object({
         vm_size = string
         zone = string
-        subnet = string
-    }))
+   }))
   
 }
