@@ -34,7 +34,7 @@ resource "azurerm_nat_gateway" "nat_gateway" {
 }
 //NAT Gateway Public IP Association
 resource "azurerm_nat_gateway_public_ip_association" "ass_public_ip" {
-  nat_gateway_id       = azurerm_nat_gateway.my_nat_gateway.id
+  nat_gateway_id       = azurerm_nat_gateway.nat_gateway.id
   public_ip_address_id = azurerm_public_ip.my_public_ip.id
 }
 //NAT Gateway Subnet Assoication
@@ -42,7 +42,7 @@ resource "azurerm_subnet_nat_gateway_association" "ass_subnet_nat" {
   subnet_id      = azurerm_subnet.snet["subnet_02"].id
   nat_gateway_id = azurerm_nat_gateway.nat_gateway.id
 }
-//NIC vm
+//NIC
 resource "azurerm_network_interface" "nic-vm" {
   for_each = toset(var.vm_names)
   name                = "${each.key}-nic"
@@ -51,7 +51,7 @@ resource "azurerm_network_interface" "nic-vm" {
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = var.vm_names[each.key].subnet
+    subnet_id                     = var.vnet_name[each.key].subnet
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -69,7 +69,7 @@ resource "azurerm_network_security_rule" "rule_vm_1" {
   priority                   = 100
   direction                  = "Inbound"
   access                     = "Allow"
-  protocol                   = "icmp"
+  protocol                   = "Icmp"
   source_port_range          = "*"
   destination_port_range     = "*"
   source_address_prefix      = "*"

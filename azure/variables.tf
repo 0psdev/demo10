@@ -52,9 +52,7 @@ variable "natgw_name" {
 
 variable "vm_names" {
     description = "vm name"
-    type = map(object({
-        subnet = string
-    }))
+    type = list(string)
   
 }
 
