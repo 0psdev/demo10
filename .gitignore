@@ -34,3 +34,5 @@ override.tf.json
 terraform.rc
 
 *.ps1
+
+.terraform.lock.hcl
