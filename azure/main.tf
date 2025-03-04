@@ -6,31 +6,31 @@ resource "azurerm_resource_group" "rsg_names" {
 //Virtual Network
 resource "azurerm_virtual_network" "vnetwork" {
   name = var.vnet_name
-  resource_group_name = var.rsg_names
-  location = var.location_names
+  resource_group_name = azurerm_resource_group.rsg_names.name
+  location = azurerm_resource_group.rsg_names.location
   address_space = var.vnet_subnet
 }
 //Subnet
 resource "azurerm_subnet" "snet" {
   for_each = toset(var.snet_names)
   name = each.key
-  resource_group_name = var.rsg_names
+  resource_group_name = azurerm_resource_group.rsg_names.name
   virtual_network_name = azurerm_virtual_network.vnetwork.name
   address_prefixes = var.snet_subnets[each.key]
 }
 //Public IP
 resource "azurerm_public_ip" "my_public_ip" {
   name                = var.natgw_name
-  resource_group_name = var.rsg_names
-  location = var.location_names 
+  resource_group_name = azurerm_resource_group.rsg_names.name
+  location            = azurerm_resource_group.rsg_names.location
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 //NAT Gateway
 resource "azurerm_nat_gateway" "nat_gateway" {
   name                = var.natgw_name
-  resource_group_name = var.rsg_names
-  location = var.location_names
+  resource_group_name = azurerm_resource_group.rsg_names.name
+  location            = azurerm_resource_group.rsg_names.location
 }
 //NAT Gateway Public IP Association
 resource "azurerm_nat_gateway_public_ip_association" "ass_public_ip" {
@@ -46,8 +46,8 @@ resource "azurerm_subnet_nat_gateway_association" "ass_subnet_nat" {
 resource "azurerm_network_interface" "nic-vm" {
   for_each = toset(var.vm_names)
   name                = "${each.key}-nic"
-  resource_group_name = var.rsg_names
-  location            = var.location_names
+  resource_group_name = azurerm_resource_group.rsg_names.name
+  location            = azurerm_resource_group.rsg_names.location
 
   ip_configuration {
     name                          = "internal"
@@ -59,8 +59,8 @@ resource "azurerm_network_interface" "nic-vm" {
 resource "azurerm_network_security_group" "nsg-vm" {
   for_each = toset(var.vm_names)
   name                = "${each.key}-nsg"
-  resource_group_name = var.rsg_names
-  location            = var.location_names
+  resource_group_name = azurerm_resource_group.rsg_names.name
+  location            = azurerm_resource_group.rsg_names.location
 }
 //NSG Rule
 resource "azurerm_network_security_rule" "rule_vm_1" {
@@ -87,8 +87,8 @@ resource "azurerm_network_interface_security_group_association" "nsg-ass-vm" {
 resource "azurerm_windows_virtual_machine" "vm" {
   for_each = toset(var.vm_names)
   name                = "${each.key}"
-  resource_group_name = var.rsg_names
-  location = var.location_names
+  resource_group_name = azurerm_resource_group.rsg_names.name
+  location = azurerm_resource_group.rsg_names.location
   size                = var.vm_specs[each.key].vm_size
   zone                = var.vm_specs[each.key].zone
   admin_username      = "test_admin"
