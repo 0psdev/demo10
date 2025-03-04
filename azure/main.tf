@@ -3,6 +3,14 @@ resource "azurerm_resource_group" "rsg_names" {
     name     = var.rsg_names
     location = var.location_names
 }
+//Stroage Account
+resource "azurerm_storage_account" "storage_account" {
+  name                     = var.storage_account_name
+  resource_group_name      = azurerm_resource_group.rsg_names.name
+  location                 = azurerm_resource_group.rsg_names.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
 //Virtual Network
 resource "azurerm_virtual_network" "vnetwork" {
   name = var.vnet_name
@@ -51,7 +59,8 @@ resource "azurerm_network_interface" "nic-vm" {
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = var.vm_specs[each.key].subnet
+    #subnet_id                     = var.vm_specs[each.key].subnet
+    subnet_id                     =  azurerm_subnet.snet[var.vm_specs[each.key].subnet].id
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -84,7 +93,7 @@ resource "azurerm_network_interface_security_group_association" "nsg-ass-vm" {
   network_security_group_id = azurerm_network_security_group.nsg-vm[each.key].id
 }
 //Virtual Machine
-resource "azurerm_windows_virtual_machine" "vm" {
+resource "azurerm_linux_virtual_machine" "vm" {
   for_each = toset(var.vm_names)
   name                = "${each.key}"
   resource_group_name = azurerm_resource_group.rsg_names.name
@@ -93,6 +102,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   zone                = var.vm_specs[each.key].zone
   admin_username      = "test_admin"
   admin_password      = "P@$$w0rd1234!"
+  disable_password_authentication = false
   computer_name = each.key
   network_interface_ids = [
     azurerm_network_interface.nic-vm[each.key].id
@@ -107,7 +117,16 @@ resource "azurerm_windows_virtual_machine" "vm" {
   source_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
-    sku       = "24_04-lts"
+    sku       = "18.04-LTS"
     version   = "latest"
   }
+
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.storage_account.primary_blob_endpoint
+  }
+
+  depends_on = [
+    azurerm_network_interface.nic-vm,
+    azurerm_network_interface_security_group_association.nsg-ass-vm
+  ]
 }

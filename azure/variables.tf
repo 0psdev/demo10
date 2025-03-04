@@ -18,6 +18,11 @@ variable "location_names" {
     type = string
 }
 
+variable "storage_account_name" {
+    description = "storage account name"
+    type = string
+}
+
 variable "vnet_name" {
     description = "vnet name"
     type = string
