@@ -51,7 +51,7 @@ resource "azurerm_network_interface" "nic-vm" {
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = var.vnet_name[each.key].subnet
+    subnet_id                     = var.vm_specs[each.key].subnet
     private_ip_address_allocation = "Dynamic"
   }
 }

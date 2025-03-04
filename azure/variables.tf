@@ -61,6 +61,7 @@ variable "vm_specs" {
     type = map(object({
         vm_size = string
         zone = string
+        subnet = string
    }))
   
 }
