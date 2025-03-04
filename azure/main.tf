@@ -27,13 +27,13 @@ resource "azurerm_subnet" "snet" {
   address_prefixes = var.snet_subnets[each.key]
 }
 //Public IP
-//resource "azurerm_public_ip" "my_public_ip" {
-  //name                = var.natgw_name
-  //resource_group_name = azurerm_resource_group.rsg_names.name
-  //location            = azurerm_resource_group.rsg_names.location
-  //allocation_method   = "Static"
-  //sku                 = "Standard"
-//}
+resource "azurerm_public_ip" "my_public_ip" {
+  name                = var.public_ip_name
+  resource_group_name = azurerm_resource_group.rsg_names.name
+  location            = azurerm_resource_group.rsg_names.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
 //NAT Gateway
 resource "azurerm_nat_gateway" "nat_gateway" {
   name                = var.natgw_name
@@ -41,10 +41,10 @@ resource "azurerm_nat_gateway" "nat_gateway" {
   location            = azurerm_resource_group.rsg_names.location
 }
 //NAT Gateway Public IP Association
-//resource "azurerm_nat_gateway_public_ip_association" "ass_public_ip" {
-  //nat_gateway_id       = azurerm_nat_gateway.nat_gateway.id
-  //public_ip_address_id = azurerm_public_ip.my_public_ip.id
-//}
+resource "azurerm_nat_gateway_public_ip_association" "ass_public_ip" {
+  nat_gateway_id       = azurerm_nat_gateway.nat_gateway.id
+  public_ip_address_id = azurerm_public_ip.my_public_ip.id
+}
 //NAT Gateway Subnet Assoication
 resource "azurerm_subnet_nat_gateway_association" "ass_subnet_nat" {
   subnet_id      = azurerm_subnet.snet["subnet_02"].id
