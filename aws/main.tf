@@ -6,7 +6,7 @@ resource "aws_vpc" "vpc_demo" {
     tags = {
         Project = "demo"
         Type = "vpc"
-        Desc = "vpc"
+        Name = "vpc"
     }
 }
 //Public Subnet
@@ -20,7 +20,7 @@ resource "aws_subnet" "pubsub_demo" {
         Project = "demo"
         Type = "subnet"
         Az = var.pubnet_specs[each.key].az
-        Desc = var.pubnet_specs[each.key].desc
+        Name = var.pubnet_specs[each.key].Name
     }
   
 }
@@ -34,7 +34,7 @@ resource "aws_subnet" "prisub_demo" {
         Project = "demo"
         Type = "subnet"
         Az = var.prinet_specs[each.key].az
-        Desc = var.prinet_specs[each.key].desc
+        Name = var.prinet_specs[each.key].Name
     }
   
 }
@@ -44,7 +44,7 @@ resource "aws_internet_gateway" "igw_demo" {
     tags = {
         Project = "demo"
         Type = "igw"
-        Desc = "internet gatway"
+        Name = "internet gatway"
     }
   
 }
@@ -58,7 +58,7 @@ resource "aws_route_table" "rt_public_demo" {
     tags = {
         Project = "demo"
         Type = "rt"
-        Desc = "public route table"
+        Name = "public route table"
     }
 }
 //Route Table Association Public
@@ -74,7 +74,7 @@ resource "aws_eip" "nat_eip" {
     tags = {
         Project = "demo"
         Type = "eip"
-        Desc = "Public IP"
+        Name = "Public IP"
     }
   
 }
@@ -85,7 +85,7 @@ resource "aws_nat_gateway" "natgw_demo" {
     tags = {
         Project = "demo"
         Type = "natgw"
-        Desc = "Nat Gateway"
+        Name = "Nat Gateway"
     }
     depends_on = [aws_eip.nat_eip]
 }
@@ -99,7 +99,7 @@ resource "aws_route_table" "rt_private_demo" {
     tags = {
         Project = "demo"
         Type = "rt"
-        Desc = "private route table"
+        Name = "private route table"
     }
 }
 
@@ -115,20 +115,20 @@ resource "aws_security_group" "sg_demo" {
     vpc_id = aws_vpc.vpc_demo.id
     ingress {
         from_port = 0
-        to_port = 65535
-        protocol = "icmp"
+        to_port = 0
+        protocol = "all"
         cidr_blocks = ["0.0.0.0/0"]
     }  
     egress {
         from_port = 0
-        to_port = 65535
+        to_port = 0
         protocol = "all"
         cidr_blocks = ["0.0.0.0/0"]
     }
     tags = {
         Project = "demo"
         Type = "sg"
-        Desc = "security group"
+        Name = "security group"
     }
 }
 //Ec2 Instance
