@@ -135,7 +135,7 @@ resource "aws_security_group" "sg_demo" {
 resource "aws_instance" "ec2_nat" {
     for_each = toset(var.prinet_az)
     ami = "ami-0b03299ddb99998e9"
-    instance_type = "t2.micro"
+    instance_type = "t3.micro"
     subnet_id = aws_subnet.prisub_demo[each.key].id
     security_groups = [aws_security_group.sg_demo.id]
     monitoring = true
